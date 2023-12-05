@@ -2,6 +2,10 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <Adafruit_NeoPixel.h>
+
+#define LED_PIN 8
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(25, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 static auto tlam = [](std::string s) {
   for (;;) {
@@ -29,7 +33,13 @@ void setup() {
   lambda("Hoo boy!");
 
   pinMode(led_pin, OUTPUT);
+
+  strip.begin();
+  strip.setBrightness(50);
+  strip.show();
 }
+
+static int pixel = 0;
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -37,6 +47,9 @@ void loop() {
 
   digitalWrite(led_pin, HIGH);
   delay(100);
+
   digitalWrite(led_pin, LOW);
-  delay(900);
+  strip.setPixelColor(pixel++ % 25, strip.Color(rand() % 255, rand() % 255, rand() % 255));
+  strip.show();
+  delay(100);
 }
