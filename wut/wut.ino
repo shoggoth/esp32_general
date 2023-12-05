@@ -1,11 +1,8 @@
 #include "Plus.hpp"
+#include "FastLEDRenderer.hpp"
 #include <iostream>
 #include <string>
 #include <thread>
-#include <Adafruit_NeoPixel.h>
-
-#define LED_PIN 8
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(25, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 static auto tlam = [](std::string s) {
   for (;;) {
@@ -19,24 +16,20 @@ static std::unique_ptr<std::thread> thread_ptr_2;
 class Foo {
 };
 
-const short led_pin = 10;  // Staus LED (blue)
+static std::unique_ptr<FastLEDRenderer> renderer = std::unique_ptr<FastLEDRenderer>(new FastLEDRenderer());
+const short led_pin = 10;  // Status LED (blue)
 
 void setup() {
   // put your setup code here, to run once:
+  delay(1000);
 
   thread_ptr_1 = std::unique_ptr<std::thread>(new std::thread(tlam, "One"));
   thread_ptr_2 = std::unique_ptr<std::thread>(new std::thread(tlam, "Two"));
   threadMessing();
   
-  auto lambda = [](std::string s) { std::cout << "Lambdad " << s << std::endl; };
-
-  lambda("Hoo boy!");
+  [](std::string s) { std::cout << "Anon lambda " << s << std::endl; } ("Hoo boy!");
 
   pinMode(led_pin, OUTPUT);
-
-  strip.begin();
-  strip.setBrightness(50);
-  strip.show();
 }
 
 static int pixel = 0;
@@ -45,11 +38,10 @@ void loop() {
   // put your main code here, to run repeatedly:
   std::cout << "Going round the main loop: " << std::endl;
 
+  renderer->render();
   digitalWrite(led_pin, HIGH);
   delay(100);
 
   digitalWrite(led_pin, LOW);
-  strip.setPixelColor(pixel++ % 25, strip.Color(rand() % 255, rand() % 255, rand() % 255));
-  strip.show();
   delay(100);
 }
