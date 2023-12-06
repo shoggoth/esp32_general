@@ -1,8 +1,8 @@
 #include <Adafruit_NeoPixel.h>
 
 class NeoPixRenderer {
-  static constexpr int num_leds = 25;
-  static constexpr int led_pin = 8;
+  static constexpr unsigned num_leds = 25;
+  static constexpr unsigned led_pin = 8;
 
   Adafruit_NeoPixel strip;
   

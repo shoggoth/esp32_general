@@ -10,12 +10,10 @@ static auto tlam = [](std::string s) {
     delay(3000);
     }
   };
+  
 static std::unique_ptr<std::thread> phys_thread;
 static std::unique_ptr<std::thread> sync_thread;
 static std::unique_ptr<std::thread> draw_thread;
-
-class Foo {
-};
 
 static std::unique_ptr<NeoPixRenderer> renderer = std::unique_ptr<NeoPixRenderer>(new NeoPixRenderer());
 const short led_pin = 10;  // Status LED (blue)
@@ -34,8 +32,6 @@ void setup() {
  
   pinMode(led_pin, OUTPUT);
 }
-
-static int pixel = 0;
 
 void loop() {
   // put your main code here, to run repeatedly:
