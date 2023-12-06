@@ -4,6 +4,7 @@
 NeoPixRenderer::NeoPixRenderer(const uint8_t v, const uint32_t ma) {
   strip = Adafruit_NeoPixel(num_leds, led_pin, NEO_GRB + NEO_KHZ800);
   strip.begin();
+  strip.setBrightness(128);
 }
 
 void NeoPixRenderer::render() {
