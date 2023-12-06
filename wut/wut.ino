@@ -1,5 +1,5 @@
 #include "Plus.hpp"
-#include "FastLEDRenderer.hpp"
+#include "NeoPixRenderer.hpp"
 #include <iostream>
 #include <string>
 #include <thread>
@@ -17,7 +17,7 @@ static std::unique_ptr<std::thread> thread_ptr_3;
 class Foo {
 };
 
-static std::unique_ptr<FastLEDRenderer> renderer = std::unique_ptr<FastLEDRenderer>(new FastLEDRenderer());
+static std::unique_ptr<NeoPixRenderer> renderer = std::unique_ptr<NeoPixRenderer>(new NeoPixRenderer());
 const short led_pin = 10;  // Status LED (blue)
 
 void setup() {
@@ -47,9 +47,9 @@ void loop() {
   //std::cout << "Going round the main loop: " << std::endl;
 
   //renderer->render();
-  //digitalWrite(led_pin, HIGH);
+  digitalWrite(led_pin, HIGH);
   delay(100);
 
-  //digitalWrite(led_pin, LOW);
+  digitalWrite(led_pin, LOW);
   delay(100);
 }
