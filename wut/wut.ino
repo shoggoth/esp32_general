@@ -26,12 +26,12 @@ void setup() {
 
   thread_ptr_1 = std::unique_ptr<std::thread>(new std::thread(tlam, "One"));
   thread_ptr_2 = std::unique_ptr<std::thread>(new std::thread(tlam, "Two"));
-  thread_ptr_3 = std::unique_ptr<std::thread>(new std::thread([] { for (;;) { renderer->render(); delay(100); }}));
+  thread_ptr_3 = std::unique_ptr<std::thread>(new std::thread([] { for (;;) { renderer->render(); delay(16); }}));
   
   threadMessing();
   thread_ptr_1->detach();
   thread_ptr_2->detach();
-  thread_ptr_3->detach();
+  //thread_ptr_3->detach();
   
   //[](std::string s) { std::cout << "Anon lambda " << s << std::endl; } ("Hoo boy!");
 
