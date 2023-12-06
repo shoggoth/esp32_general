@@ -7,12 +7,12 @@
 static auto tlam = [](std::string s) {
   for (;;) {
     std::cout << "Thread ID: " << std::this_thread::get_id() << " - " << s << std::endl;
-    delay(777);
+    delay(3000);
     }
   };
-static std::unique_ptr<std::thread> thread_ptr_1;
-static std::unique_ptr<std::thread> thread_ptr_2;
-static std::unique_ptr<std::thread> thread_ptr_3;
+static std::unique_ptr<std::thread> phys_thread;
+static std::unique_ptr<std::thread> sync_thread;
+static std::unique_ptr<std::thread> draw_thread;
 
 class Foo {
 };
@@ -22,21 +22,16 @@ const short led_pin = 10;  // Status LED (blue)
 
 void setup() {
   // put your setup code here, to run once:
-  //delay(1000);
+  Serial.begin(115200);
 
-  thread_ptr_1 = std::unique_ptr<std::thread>(new std::thread(tlam, "One"));
-  thread_ptr_2 = std::unique_ptr<std::thread>(new std::thread(tlam, "Two"));
-  thread_ptr_3 = std::unique_ptr<std::thread>(new std::thread([] { for (;;) { renderer->render(); delay(16); }}));
+  phys_thread = std::unique_ptr<std::thread>(new std::thread(tlam, "TODO: Physics"));
+  sync_thread = std::unique_ptr<std::thread>(new std::thread(tlam, "TODO: Sync"));
+  draw_thread = std::unique_ptr<std::thread>(new std::thread([] { for (;;) { renderer->render(); delay(16); }}));
   
-  threadMessing();
-  thread_ptr_1->detach();
-  thread_ptr_2->detach();
-  //thread_ptr_3->detach();
-  
-  //[](std::string s) { std::cout << "Anon lambda " << s << std::endl; } ("Hoo boy!");
-
-  //renderer->render();
-
+  phys_thread->detach();
+  sync_thread->detach();
+  draw_thread->detach();
+ 
   pinMode(led_pin, OUTPUT);
 }
 
@@ -44,12 +39,10 @@ static int pixel = 0;
 
 void loop() {
   // put your main code here, to run repeatedly:
-  //std::cout << "Going round the main loop: " << std::endl;
-
-  //renderer->render();
   digitalWrite(led_pin, HIGH);
   delay(100);
-
   digitalWrite(led_pin, LOW);
   delay(100);
+
+  if (Serial.available() > 0) std::cout << "From serial: " << (char)Serial.read() << std::endl;
 }
