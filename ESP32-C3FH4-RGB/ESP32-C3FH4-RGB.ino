@@ -1,54 +1,36 @@
-#include "Plus.hpp"
-#include "NeoPixRenderer.hpp"
+#include "OctonRenderer.hpp"
 #include <iostream>
 #include <string>
 #include <thread>
 
-static auto tlam = [](std::string s) {
-  for (;;) {
-    std::cout << "Thread ID: " << std::this_thread::get_id() << " - " << s << std::endl;
-    delay(3000);
-    }
-  };
-  
-static std::unique_ptr<std::thread> phys_thread;
-static std::unique_ptr<std::thread> sync_thread;
-static std::unique_ptr<std::thread> draw_thread;
+static auto renderer = std::unique_ptr<OctonRenderer>(new OctonRenderer(64));
 
-static std::unique_ptr<NeoPixRenderer> renderer = std::unique_ptr<NeoPixRenderer>(new NeoPixRenderer());
 const short button_pin = 9; // Button
 const short led_pin = 10;   // Status LED (blue)
 
-void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(115200);
+static unsigned mark_space = 1000;
+static auto mark_space_blink = [mark_space](short led_pin) {
+  for (;;) {
+    digitalWrite(led_pin, HIGH);
+    delay(mark_space);
+    digitalWrite(led_pin, LOW);
+    delay(1000 - mark_space);
+  }
+};
 
-  phys_thread = std::unique_ptr<std::thread>(new std::thread(tlam, "TODO: Physics"));
-  sync_thread = std::unique_ptr<std::thread>(new std::thread(tlam, "TODO: Sync"));
-  draw_thread = std::unique_ptr<std::thread>(new std::thread([] { for (;;) { renderer->render(); delay(16); }}));
-  
-  phys_thread->detach();
-  sync_thread->detach();
-  draw_thread->detach();
- 
+void setup() {
+  // Hardware setup
   pinMode(led_pin, OUTPUT);
   pinMode(button_pin, INPUT);
+
+  // Threads setup
+  static int t = 0;
+  auto draw_thread = std::unique_ptr<std::thread>(new std::thread([] { for (;;) { renderer->render(rand() % 0x7fff); delay(1500); }}));
+  auto blnk_thread = std::unique_ptr<std::thread>(new std::thread(mark_space_blink, led_pin));
+  draw_thread->detach();
+  blnk_thread->detach();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  if (Serial.available() > 0) std::cout << "From serial: " << (char)Serial.read() << std::endl;
-  
-  static unsigned button_value = 1;
-  static unsigned mark_space = 0;
-  unsigned v = digitalRead(button_pin);
-  if (v != button_value) {
-    mark_space = button_value ? 500 : rand() % 480;
-    button_value = v;
-  }
-
-  digitalWrite(led_pin, HIGH);
-  delay(500 + mark_space);
-  digitalWrite(led_pin, LOW);
-  delay(500 - mark_space);
+  if (!digitalRead(button_pin)) mark_space = rand() % 1000;
 }
