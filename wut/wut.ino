@@ -51,5 +51,4 @@ void loop() {
   delay(500 + mark_space);
   digitalWrite(led_pin, LOW);
   delay(500 - mark_space);
-
 }
