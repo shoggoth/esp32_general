@@ -1,14 +1,14 @@
 #include "OctonRenderer.hpp"
 #include <iostream>
 
-OctonRenderer::OctonRenderer(const short brightness) {
+OctonRenderer::OctonRenderer(const uint8_t brightness) {
   strip = Adafruit_NeoPixel(num_leds, led_pin, NEO_GRB + NEO_KHZ800);
   strip.begin();
-  strip.setBrightness(brightness);
+  setBrightness(brightness);
 }
 
-void OctonRenderer::render(uint16_t octon) {
-  int r = rand() % 64, g = rand() % 64, b = rand() % 64;
+void OctonRenderer::render(uint16_t octon, uint8_t intensity) {
+  int r = rand() % intensity, g = rand() % intensity, b = rand() % intensity;
   strip.clear();
   for (int i = 0; i < 15; i++) {
     if (octon & 1) {
@@ -20,3 +20,15 @@ void OctonRenderer::render(uint16_t octon) {
   }
   strip.show();
 }
+
+void OctonRenderer::renderByteValue(const uint8_t value) {
+  strip.clear();
+  int mask = 1;
+  for (int i = 0; i < 8; i++) {
+    if (value & mask) strip.setPixelColor(i, 255, 255, 255);
+    mask = mask << 1;
+  }
+  strip.show();
+}
+
+void OctonRenderer::setBrightness(const uint8_t brightness) { strip.setBrightness(brightness); }
